@@ -402,53 +402,55 @@ const App: React.FC = () => {
             ) : (
               <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
                 <Activity size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-                <p>Waiting for data from monitor...</p>
+                <p>Waiting for data...</p>
               </div>
             )}
           </div>
 
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{margin: 0}}>
-                <History size={20} /> Patient History
-              </h3>
-            </div>
+          {showHistory && (
+            <div className="card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 style={{margin: 0}}>
+                  <History size={20} /> Patient History
+                </h3>
+              </div>
 
-            <div style={{ position: 'relative', marginBottom: '15px' }}>
-              <input 
-                type="text" 
-                placeholder="Search Patient Name..." 
-                value={historySearch}
-                onChange={(e) => setHistorySearch(e.target.value)} 
-                style={{ paddingRight: '35px', marginBottom: 0 }}
-              />
-              <div style={{ position: 'absolute', right: '10px', top: '10px', opacity: 0.5 }}>
-                <Search size={16} />
+              <div style={{ position: 'relative', marginBottom: '15px' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search Patient Name..." 
+                  value={historySearch}
+                  onChange={(e) => setHistorySearch(e.target.value)} 
+                  style={{ paddingRight: '35px', marginBottom: 0 }}
+                />
+                <div style={{ position: 'absolute', right: '10px', top: '10px', opacity: 0.5 }}>
+                  <Search size={16} />
+                </div>
+              </div>
+              
+              <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                {historySearch.trim() ? (
+                  readings.length > 0 ? (
+                    readings.map((r) => (
+                      <div key={r._id} className="reading-item">
+                        <div>
+                          <div style={{fontWeight: 700}}>{r.systolic}/{r.diastolic} <small>mmHg</small></div>
+                          <div style={{fontSize: '11px', color: 'var(--text-muted)'}}>{r.patientName || 'Unknown'} • {new Date(r.timestamp).toLocaleDateString()}</div>
+                        </div>
+                        <div style={{color: 'var(--accent)', fontWeight: 600, fontSize: '14px'}}>
+                          {r.pulse} <small>BPM</small>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{textAlign: 'center', color: 'var(--text-muted)'}}>No records found for "{historySearch}".</p>
+                  )
+                ) : (
+                  <p style={{textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)'}}>Type a name above to view history.</p>
+                )}
               </div>
             </div>
-            
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              {historySearch.trim() ? (
-                readings.length > 0 ? (
-                  readings.map((r) => (
-                    <div key={r._id} className="reading-item">
-                      <div>
-                        <div style={{fontWeight: 700}}>{r.systolic}/{r.diastolic} <small>mmHg</small></div>
-                        <div style={{fontSize: '11px', color: 'var(--text-muted)'}}>{r.patientName || 'Unknown'} • {new Date(r.timestamp).toLocaleDateString()}</div>
-                      </div>
-                      <div style={{color: 'var(--accent)', fontWeight: 600, fontSize: '14px'}}>
-                        {r.pulse} <small>BPM</small>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{textAlign: 'center', color: 'var(--text-muted)'}}>No records found for "{historySearch}".</p>
-                )
-              ) : (
-                <p style={{textAlign: 'center', fontSize: '13px', color: 'var(--text-muted)'}}>Type a name above to view history.</p>
-              )}
-            </div>
-          </div>
+          )}
         </main>
       </div>
     </div>
