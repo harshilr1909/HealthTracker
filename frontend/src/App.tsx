@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { Bluetooth, Activity, History, User, LogOut, Database, Heart, RefreshCw, Search } from 'lucide-react';
 
@@ -24,7 +24,12 @@ const App: React.FC = () => {
   const [lastReading, setLastReading] = useState<Reading | null>(null);
   const [syncBuffer, setSyncBuffer] = useState<Reading[]>([]);
   const [debugLog, setDebugLog] = useState<string[]>([]);
-  const [patientName, setPatientName] = useState<string>(localStorage.getItem('lastPatient') || '');
+  const [patientName, setPatientName] = useState<string>('');
+  const patientNameRef = useRef(patientName);
+
+  useEffect(() => {
+    patientNameRef.current = patientName;
+  }, [patientName]);
   const [historySearch, setHistorySearch] = useState<string>('');
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [showHistory, setShowHistory] = useState(!!localStorage.getItem('token'));
@@ -158,7 +163,6 @@ const App: React.FC = () => {
       alert('Enter patient name first!');
       return;
     }
-    localStorage.setItem('lastPatient', patientName);
     
     // Start showing logs now
     setIsConsoleStarted(true);
@@ -244,7 +248,7 @@ const App: React.FC = () => {
             offset += 2;
         }
 
-        const newReading = { systolic, diastolic, pulse, timestamp, patientName };
+        const newReading = { systolic, diastolic, pulse, timestamp, patientName: patientNameRef.current };
         setLastReading(newReading);
         setSyncBuffer(prev => [...prev, newReading]);
         addLog(`New measurement: ${systolic}/${diastolic}`);
@@ -264,7 +268,7 @@ const App: React.FC = () => {
         diastolic, 
         pulse, 
         timestamp: new Date().toISOString(), 
-        patientName 
+        patientName: patientNameRef.current 
       };
       setLastReading(newReading);
       setSyncBuffer(prev => [...prev, newReading]);
@@ -295,7 +299,6 @@ const App: React.FC = () => {
       alert('Enter patient name first!');
       return;
     }
-    localStorage.setItem('lastPatient', patientName);
     setIsScanning(true);
     try {
       const device = await (navigator as any).bluetooth.requestDevice({
