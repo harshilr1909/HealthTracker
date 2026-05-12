@@ -304,7 +304,7 @@ const App: React.FC = () => {
       const device = await (navigator as any).bluetooth.requestDevice({
         filters: [
           { services: [0x1810] },
-          { namePrefix: 'VitalHub' }
+          { namePrefix: 'ESP32-devkit-v1' }
         ],
         optionalServices: [0x1810, ESP32_SERVICE_UUID]
       });

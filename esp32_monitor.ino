@@ -39,7 +39,7 @@ void setup() {
   Serial.begin(115200);
 
   // 1. Setup BLE
-  BLEDevice::init("VitalHub-Monitor");
+  BLEDevice::init("ESP32-devkit-v1");
   BLEServer *pServer = BLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
   BLEService *pService = pServer->createService(SERVICE_UUID);

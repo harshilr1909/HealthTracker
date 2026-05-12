@@ -7,6 +7,7 @@ const User = require('./models/User');
 const jwt = require('jsonwebtoken');
 const auth = require('./middleware/auth');
 
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/beurer_data';
@@ -15,6 +16,9 @@ const ESP32_API_KEY = process.env.ESP32_API_KEY || 'esp32-secret-123';
 
 app.use(cors());
 app.use(express.json());
+
+// Serve Static Files from Frontend
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
 // ESP32 Direct WiFi Endpoint
 app.post('/api/esp32/reading', async (req, res) => {
