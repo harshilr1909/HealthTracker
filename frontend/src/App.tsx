@@ -4,10 +4,6 @@ import { Bluetooth, Activity, History, User, LogOut, Database, Heart, RefreshCw,
 
 const API_URL = '/api';
 
-// Custom ESP32 Service UUIDs
-const ESP32_SERVICE_UUID = '4fafc201-1fb5-459e-8fcc-c5c9c331914b';
-const ESP32_CHAR_UUID = 'beb5483e-36e1-4688-b7f5-ea07361b26a8';
-
 interface Reading {
   _id?: string;
   systolic: number;
@@ -59,25 +55,12 @@ const App: React.FC = () => {
         setTimeout(() => connectToDevice(device), 3000);
       });
 
-      // Try Standard Blood Pressure Service first
-      try {
-        const service = await server.getPrimaryService(0x1810);
-        const characteristic = await service.getCharacteristic(0x2A35);
-        await characteristic.startNotifications();
-        characteristic.addEventListener('characteristicvaluechanged', handleBloodPressureMeasurement);
-        addLog('Standard Monitor Linked.');
-      } catch (e) {
-        // Fallback to ESP32 Custom Service
-        try {
-          const service = await server.getPrimaryService(ESP32_SERVICE_UUID);
-          const characteristic = await service.getCharacteristic(ESP32_CHAR_UUID);
-          await characteristic.startNotifications();
-          characteristic.addEventListener('characteristicvaluechanged', handleESP32Measurement);
-          addLog('ESP32 Linked.');
-        } catch (e2) {
-          throw new Error('No compatible service found');
-        }
-      }
+      // Standard Blood Pressure Service (Beurer BM54)
+      const service = await server.getPrimaryService(0x1810);
+      const characteristic = await service.getCharacteristic(0x2A35);
+      await characteristic.startNotifications();
+      characteristic.addEventListener('characteristicvaluechanged', handleBloodPressureMeasurement);
+      addLog('Standard Monitor Linked.');
 
       setIsConnected(true);
       setActiveDevice(device);
@@ -257,27 +240,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleESP32Measurement = (event: any) => {
-    try {
-      const value = new TextDecoder().decode(event.target.value);
-      // Expected format: "sys,dia,pulse" e.g. "120,80,72"
-      const [systolic, diastolic, pulse] = value.split(',').map(Number);
-      
-      const newReading = { 
-        systolic, 
-        diastolic, 
-        pulse, 
-        timestamp: new Date().toISOString(), 
-        patientName: patientNameRef.current 
-      };
-      setLastReading(newReading);
-      setSyncBuffer(prev => [...prev, newReading]);
-      addLog(`ESP32 Data: ${systolic}/${diastolic}`);
-    } catch (e) {
-      addLog('ESP32 Parse Error');
-    }
-  };
-
   const bulkSaveBuffer = async (buffer: Reading[]) => {
     try {
       await axios.post(`${API_URL}/readings/bulk`, buffer);
@@ -303,10 +265,9 @@ const App: React.FC = () => {
     try {
       const device = await (navigator as any).bluetooth.requestDevice({
         filters: [
-          { services: [0x1810] },
-          { namePrefix: 'ESP32-devkit-v1' }
+          { services: [0x1810] }
         ],
-        optionalServices: [0x1810, ESP32_SERVICE_UUID]
+        optionalServices: [0x1810]
       });
       await connectToDevice(device);
     } catch (err: any) {
