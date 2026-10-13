@@ -8,6 +8,31 @@
   --text-muted: #64748b;
   --border-color: #e2e8f0;
   --accent: #ef4444;
+  --display-bg: #f1f5f9;
+  --hover-bg: #eef2ff;
+  --active-bg: #dbeafe;
+  --signed-in-bg: #f0fdf4;
+  --signed-in-border: #bbf7d0;
+  --input-bg: #ffffff;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --primary: #60a5fa;
+  --primary-hover: #93c5fd;
+  --bg-gray: #0f172a;
+  --card-bg: #1e293b;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --accent: #f87171;
+  --display-bg: #0f172a;
+  --hover-bg: #1e3a8a;
+  --active-bg: #1d4ed8;
+  --signed-in-bg: #052e16;
+  --signed-in-border: #166534;
+  --input-bg: #0f172a;
+  color-scheme: dark;
 }
 
 body {
@@ -91,6 +116,24 @@ input {
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 12px;
+  background-color: var(--input-bg);
+  color: var(--text-main);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+.theme-toggle {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.theme-toggle:hover {
+  background: var(--hover-bg);
 }
 
 input:focus {
@@ -101,7 +144,7 @@ input:focus {
 .reading-display {
   text-align: center;
   padding: 30px;
-  background: #f1f5f9;
+  background: var(--display-bg);
   border-radius: 16px;
 }
 
@@ -150,6 +193,42 @@ input:focus {
   border-bottom: none;
 }
 
+.patient-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  background: var(--bg-gray);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.patient-item:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary);
+}
+
+.patient-item.active {
+  background: var(--active-bg);
+  border-color: var(--primary);
+}
+
+.patient-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.patient-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
 .history-grid {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -160,4 +239,232 @@ input:focus {
   .history-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.reading-display.analyzing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 30px;
+}
+
+.analyzing-spinner {
+  color: var(--primary);
+  opacity: 0.9;
+}
+
+.analyzing-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-main);
+}
+
+.analyzing-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.analyzing-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.analyzing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.3;
+  animation: analyzing-bounce 1.2s infinite ease-in-out;
+}
+
+.analyzing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.analyzing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes analyzing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.previous-final {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--card-bg);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.signed-in-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--signed-in-bg);
+  border: 1px solid var(--signed-in-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.signed-in-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #16a34a;
+  flex-shrink: 0;
+}
+
+.signed-in-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  font-size: 13px;
+  color: var(--text-main);
+}
+
+.signed-in-text span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.signout-btn {
+  background: var(--bg-gray);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.console-card {
+  padding: 16px 24px;
+}
+
+.console-toggle {
+  width: 100%;
+  background: none;
+  color: var(--text-main);
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.console-toggle:hover {
+  background: none;
+}
+
+.console-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.console-chevron {
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
+
+.console-chevron.open {
+  transform: rotate(180deg);
+}
+
+.console-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.auth-card h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.auth-sub {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.auth-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.auth-card label input {
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.auth-submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.auth-switch {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+  background: none;
+  color: var(--primary);
+  padding: 6px;
+  font-size: 13px;
+}
+
+.auth-switch:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+.auth-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.auth-close:hover {
+  background: var(--hover-bg);
 }

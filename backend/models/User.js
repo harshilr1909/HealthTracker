@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  // Legacy field (kept for old accounts). New accounts use hospitalId.
+  username: { type: String, unique: true, sparse: true },
+  // Canonical doctor identity — unique per doctor.
+  hospitalId: { type: String, unique: true, sparse: true },
+  name: { type: String },
   password: { type: String, required: true },
   readings: {type:mongoose.Schema.Types.ObjectId, ref:'Reading'},
 });
