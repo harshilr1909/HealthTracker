@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Bluetooth, Activity, History, LogOut, Database, Heart, RefreshCw, Search, Users, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Bluetooth, Activity, History, LogOut, Database, Heart, RefreshCw, Search, Users, ChevronDown } from 'lucide-react';
 
 const API_URL = '/api';
 // How long to wait after the last BLE packet before deciding the
@@ -38,11 +38,6 @@ function formatDoctorLabel(doctor: { name: string; hospitalId: string }): string
 }
 
 const App: React.FC = () => {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
   const [readings, setReadings] = useState<Reading[]>([]);
   const [isScanning, setIsScanning] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -77,10 +72,6 @@ const App: React.FC = () => {
 
   useEffect(() => { activePatientRef.current = activePatient; }, [activePatient]);
   useEffect(() => { tokenRef.current = token; }, [token]);
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   const addLog = (msg: string) => {
     if (!isConsoleStarted) return;
@@ -426,15 +417,6 @@ const App: React.FC = () => {
       <header className="main-header">
         <h1><Activity size={28} style={{verticalAlign: 'middle', marginRight: '8px'}} /> VitalHub Hospital System</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            type="button"
-            className="theme-toggle"
-            onClick={() => setTheme(t => (t === 'dark' ? 'light' : 'dark'))}
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
           <div className="auth-section">
           {!token ? (
             <div style={{ display: 'flex', gap: '8px' }}>
