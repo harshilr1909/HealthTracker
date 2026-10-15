@@ -12,12 +12,35 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/beurer_data';
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const ESP32_API_KEY = process.env.ESP32_API_KEY || 'esp32-secret-123';
 
 app.use(cors());
 app.use(express.json());
 
 // Serve Static Files from Frontend
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// ---- ESP32 Direct WiFi ingest (additive; existing auth/readings logic untouched) ----
+app.post('/api/esp32/reading', async (req, res) => {
+  try {
+    const apiKey = req.header('X-API-Key');
+    if (apiKey !== ESP32_API_KEY) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { systolic, diastolic, pulse, patientName, timestamp } = req.body;
+    const newReading = new Reading({
+      systolic,
+      diastolic,
+      pulse,
+      patientName: (patientName || 'ESP32_Device').toString().trim(),
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      userId: 'esp32_device',
+    });
+    await newReading.save();
+    res.status(201).json({ message: 'ESP32 reading saved' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
