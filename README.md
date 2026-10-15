@@ -24,7 +24,18 @@ git clone <your-repo-url>
 cd mark1
 ```
 
-### 2. Backend Setup
+### 2. Run Everything (one command, from the repo root)
+```bash
+./start.sh
+# or: npm run dev  (same thing — calls start.sh)
+# or: npm start
+```
+This starts the backend (`http://localhost:5000`) and the frontend
+(`http://localhost:5173`) together. Press `Ctrl+C` to stop both.
+Dependencies are auto-installed on first run; or install upfront with
+`npm run install:all`.
+
+### 3. Backend Setup (manual alternative)
 ```bash
 cd backend
 npm install
@@ -39,7 +50,7 @@ Start the backend server:
 npm start # or 'npx nodemon server.js' for development
 ```
 
-### 3. Frontend Setup
+### 3. Frontend Setup (manual alternative)
 ```bash
 cd ../frontend
 npm install
